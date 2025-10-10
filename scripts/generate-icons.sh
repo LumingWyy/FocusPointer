@@ -48,7 +48,7 @@ rm "$TEMP_FILE"
 
 echo -e "${GREEN}💡 提示: 也可以使用在线工具生成图标${NC}"
 echo "- Figma: https://figma.com"
-echo "- Canva: https://canva.com
+echo "- Canva: https://canva.com"
 echo "- AppIconMaker: https://appiconmaker.co"
 echo ""
 

@@ -19,8 +19,8 @@ final class HighlightManager: ObservableObject {
 
     // MARK: - Private Properties
 
-    /// 鼠标事件监听器
-    private let mouseMonitor = MouseEventMonitor()
+    /// 鼠标事件监听器（可注入，便于测试）
+    private let mouseMonitor: MouseEventMonitoring
 
     /// 高亮窗口
     private var highlightWindow: HighlightWindow?
@@ -33,8 +33,9 @@ final class HighlightManager: ObservableObject {
 
     // MARK: - Initialization
 
-    init(settingsManager: SettingsManager) {
+    init(settingsManager: SettingsManager, mouseMonitor: MouseEventMonitoring = MouseEventMonitor()) {
         self.settingsManager = settingsManager
+        self.mouseMonitor = mouseMonitor
         setupObservers()
         observeSettings()
     }
@@ -43,7 +44,7 @@ final class HighlightManager: ObservableObject {
 
     private func setupObservers() {
         // 监听鼠标按下状态
-        mouseMonitor.$isMouseDown
+        mouseMonitor.isMouseDownPublisher
             .sink { [weak self] isDown in
                 guard let self = self, self.isEnabled else { return }
 
@@ -56,7 +57,7 @@ final class HighlightManager: ObservableObject {
             .store(in: &cancellables)
 
         // 监听鼠标位置变化
-        mouseMonitor.$mouseLocation
+        mouseMonitor.mouseLocationPublisher
             .sink { [weak self] location in
                 guard let self = self,
                       self.isEnabled,

@@ -1,9 +1,19 @@
 import Cocoa
 import Combine
 
+/// 鼠标事件监听协议，便于注入和测试
+protocol MouseEventMonitoring: AnyObject {
+    var isMouseDown: Bool { get }
+    var mouseLocation: CGPoint { get }
+    var isMouseDownPublisher: AnyPublisher<Bool, Never> { get }
+    var mouseLocationPublisher: AnyPublisher<CGPoint, Never> { get }
+    func startMonitoring()
+    func stopMonitoring()
+}
+
 /// 鼠标事件监听服务
 /// 监听全局鼠标事件并发布状态变化
-final class MouseEventMonitor: ObservableObject {
+final class MouseEventMonitor: ObservableObject, MouseEventMonitoring {
     // MARK: - Published Properties
 
     /// 鼠标是否按下
@@ -11,6 +21,10 @@ final class MouseEventMonitor: ObservableObject {
 
     /// 当前鼠标位置
     @Published private(set) var mouseLocation: CGPoint = .zero
+
+    // 对外发布者（用于协议）
+    var isMouseDownPublisher: AnyPublisher<Bool, Never> { $isMouseDown.eraseToAnyPublisher() }
+    var mouseLocationPublisher: AnyPublisher<CGPoint, Never> { $mouseLocation.eraseToAnyPublisher() }
 
     // MARK: - Private Properties
 
@@ -38,6 +52,7 @@ final class MouseEventMonitor: ObservableObject {
 
         guard accessEnabled else {
             print("⚠️ 需要辅助功能权限才能监听鼠标事件")
+            openAccessibilityPreferences()
             return
         }
 
@@ -81,5 +96,13 @@ final class MouseEventMonitor: ObservableObject {
         isMonitoring = false
         isMouseDown = false
         print("🛑 停止监听鼠标事件")
+    }
+
+    // MARK: - Helpers
+
+    /// 打开系统“辅助功能”设置页，帮助用户授权
+    private func openAccessibilityPreferences() {
+        let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
+        NSWorkspace.shared.open(url)
     }
 }
