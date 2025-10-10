@@ -8,8 +8,24 @@ final class AppState: ObservableObject {
     /// 单例实例
     static let shared = AppState()
 
+    /// 设置管理器
+    @Published var settingsManager: SettingsManager
+
+    /// 高亮管理器
+    @Published var highlightManager: HighlightManager
+
+    /// 设置窗口控制器
+    private var settingsWindowController: SettingsWindowController?
+
     /// 私有初始化确保单例模式
-    private init() {}
+    private init(
+        settingsManager: SettingsManager = SettingsManager(),
+        mouseMonitor: MouseEventMonitoring = MouseEventMonitor()
+    ) {
+        self.settingsManager = settingsManager
+        self.highlightManager = HighlightManager(settingsManager: settingsManager, mouseMonitor: mouseMonitor)
+        self.settingsWindowController = SettingsWindowController(settingsManager: settingsManager)
+    }
 
     // MARK: - Application Actions
 
@@ -19,17 +35,19 @@ final class AppState: ObservableObject {
         NSApplication.shared.terminate(nil)
     }
 
-    /// 显示设置窗口 (占位)
-    /// - Note: 将在 Story 1.4 中实现
+    /// 显示设置窗口
+    /// - Note: Story 1.4 & 1.5 实现
     func showSettings() {
-        // 占位 - 功能将在故事 1.4 实现
-        print("Settings menu item clicked - implementation pending")
+        settingsWindowController?.show()
+        print("⚙️ 打开设置窗口")
     }
 
-    /// 切换高亮功能 (占位)
-    /// - Note: 将在 Story 1.3 中实现
+    /// 切换高亮功能
+    /// - Note: Story 1.2 & 1.3 实现
     func toggleHighlight() {
-        // 占位 - 功能将在故事 1.3 实现
-        print("Toggle highlight clicked - implementation pending")
+        highlightManager.toggle()
+
+        let status = highlightManager.isEnabled ? "已启用" : "已禁用"
+        print("✨ 高亮效果\(status)")
     }
 }
