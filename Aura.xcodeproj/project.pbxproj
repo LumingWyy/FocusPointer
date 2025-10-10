@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		01F42A4B2F6AC8A238982BE9 /* AuraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5887C106111B2A99B605D27D /* AuraApp.swift */; };
 		0E1D7EE48DF1C1AB154857EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC6114A03571B1F02AC5AFA5 /* Assets.xcassets */; };
+		2BD1CBAB279DDFB7E4A0E0A6 /* HighlightWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A2A273CD4374BE80FB82B /* HighlightWindow.swift */; };
+		43262283C7135E3668236C60 /* HighlightManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E63E7F08CE6E833430F0E /* HighlightManager.swift */; };
+		4C521A7A33C33F9D1A4D6F48 /* MouseEventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF11563D134D699389B64D83 /* MouseEventMonitor.swift */; };
 		7E2B167F06376F60B8048A75 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F299C28897DD3A885294A9 /* AppState.swift */; };
 		D0E1CB45E36209FC5FE4B5B6 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BFFBD92E38976B4224FAD5 /* MenuBarView.swift */; };
 		F0094E7B17371D5E1E9188FE /* AuraAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39442EB62824EF7133F66421 /* AuraAppTests.swift */; };
@@ -31,11 +34,23 @@
 		4A9E59AC258B2C2BA91E5EF7 /* Aura.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aura.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57BFFBD92E38976B4224FAD5 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		5887C106111B2A99B605D27D /* AuraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraApp.swift; sourceTree = "<group>"; };
+		701E63E7F08CE6E833430F0E /* HighlightManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightManager.swift; sourceTree = "<group>"; };
+		CF11563D134D699389B64D83 /* MouseEventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseEventMonitor.swift; sourceTree = "<group>"; };
 		D8CF4CF9E7D0954FEFB3E954 /* AuraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AuraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E28A2A273CD4374BE80FB82B /* HighlightWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightWindow.swift; sourceTree = "<group>"; };
 		EC6114A03571B1F02AC5AFA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		106E6E83D325D24BC415DB82 /* Highlight */ = {
+			isa = PBXGroup;
+			children = (
+				701E63E7F08CE6E833430F0E /* HighlightManager.swift */,
+				E28A2A273CD4374BE80FB82B /* HighlightWindow.swift */,
+			);
+			path = Highlight;
+			sourceTree = "<group>";
+		};
 		1A691351EBE1DD7961333418 = {
 			isa = PBXGroup;
 			children = (
@@ -61,6 +76,14 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		7ECD212904A06E584926C9B0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				CF11563D134D699389B64D83 /* MouseEventMonitor.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		A3354BB589049926C2237428 /* AuraTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -78,6 +101,7 @@
 				F0D0E2C44A4CC3449F7E832F /* Features */,
 				CF8B789E1A9FBACB723B0A09 /* Models */,
 				D542C488A121DEB1086984E0 /* Resources */,
+				7ECD212904A06E584926C9B0 /* Services */,
 			);
 			name = Aura;
 			path = Aura;
@@ -102,6 +126,7 @@
 		F0D0E2C44A4CC3449F7E832F /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				106E6E83D325D24BC415DB82 /* Highlight */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -210,7 +235,10 @@
 			files = (
 				7E2B167F06376F60B8048A75 /* AppState.swift in Sources */,
 				01F42A4B2F6AC8A238982BE9 /* AuraApp.swift in Sources */,
+				43262283C7135E3668236C60 /* HighlightManager.swift in Sources */,
+				2BD1CBAB279DDFB7E4A0E0A6 /* HighlightWindow.swift in Sources */,
 				D0E1CB45E36209FC5FE4B5B6 /* MenuBarView.swift in Sources */,
+				4C521A7A33C33F9D1A4D6F48 /* MouseEventMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

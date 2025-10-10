@@ -8,6 +8,9 @@ final class AppState: ObservableObject {
     /// 单例实例
     static let shared = AppState()
 
+    /// 高亮管理器
+    @Published var highlightManager = HighlightManager()
+
     /// 私有初始化确保单例模式
     private init() {}
 
@@ -26,10 +29,12 @@ final class AppState: ObservableObject {
         print("Settings menu item clicked - implementation pending")
     }
 
-    /// 切换高亮功能 (占位)
-    /// - Note: 将在 Story 1.3 中实现
+    /// 切换高亮功能
+    /// - Note: Story 1.2 & 1.3 实现
     func toggleHighlight() {
-        // 占位 - 功能将在故事 1.3 实现
-        print("Toggle highlight clicked - implementation pending")
+        highlightManager.toggle()
+
+        let status = highlightManager.isEnabled ? "已启用" : "已禁用"
+        print("✨ 高亮效果\(status)")
     }
 }
