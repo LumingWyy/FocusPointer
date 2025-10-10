@@ -1,0 +1,169 @@
+name: Release from PR
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    # 只在 PR 合并且分支名以 release 开头时运行
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release')
+    runs-on: macos-14
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: 📥 Checkout 代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 设置 Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: 📦 安装依赖
+        run: |
+          brew install xcodegen
+
+      - name: 🔍 显示环境信息
+        run: |
+          xcodebuild -version
+          swift --version
+          xcodegen --version
+
+      - name: 🏗️ 生成 Xcode 项目
+        run: |
+          xcodegen generate
+
+      - name: 🔨 构建应用
+        run: |
+          chmod +x scripts/build.sh
+          ./scripts/build.sh
+
+      - name: 📦 创建 DMG
+        run: |
+          chmod +x scripts/create-dmg.sh
+          ./scripts/create-dmg.sh
+
+      - name: 📋 获取版本和 PR 信息
+        id: info
+        run: |
+          # 从 Info.plist 获取版本号
+          VERSION=$(defaults read "$(pwd)/build/Export/Aura.app/Contents/Info.plist" CFBundleShortVersionString)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "dmg_name=Aura-${VERSION}.dmg" >> $GITHUB_OUTPUT
+
+          # 从 PR 标题提取版本标签 (假设格式为 "release/v1.0.0" 或 PR 标题为 "v1.0.0")
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          RELEASE_TAG="${PR_TITLE}"
+
+          # 如果 PR 标题不是以 v 开头,则添加 v 前缀
+          if [[ ! "$RELEASE_TAG" =~ ^v ]]; then
+            RELEASE_TAG="v${VERSION}"
+          fi
+
+          echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
+          echo "📌 Release Tag: ${RELEASE_TAG}"
+          echo "📦 Version: ${VERSION}"
+
+      - name: 🔐 计算校验和
+        run: |
+          cd build
+          shasum -a 256 *.dmg > checksums.txt
+          cat checksums.txt
+
+      - name: 🏷️ 创建 Release Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.info.outputs.release_tag }}" -m "Release ${{ steps.info.outputs.release_tag }}"
+          git push origin "${{ steps.info.outputs.release_tag }}"
+
+      - name: 📤 创建 GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.info.outputs.release_tag }}
+          name: Release ${{ steps.info.outputs.release_tag }}
+          files: |
+            build/Aura-*.dmg
+            build/checksums.txt
+          body: |
+            ## 🎉 Aura ${{ steps.info.outputs.release_tag }}
+
+            ### 📥 Download / 下载
+            Download the DMG file below to install.
+            下载下方的 DMG 文件进行安装。
+
+            ### ✨ Features / 功能
+            - 🖱️ Mouse click highlighting / 鼠标点击高亮效果
+            - 🎨 Multiple color themes / 多种颜色主题
+            - 📏 Adjustable border thickness / 可自定义边框厚度
+            - 🚀 Lightweight, low resource usage / 轻量级,低资源占用
+
+            ### 📝 Installation / 安装说明
+
+            **English:**
+            1. Download `Aura-${{ steps.info.outputs.version }}.dmg`
+            2. Open the DMG file
+            3. Drag Aura to Applications folder
+            4. Grant Accessibility permission in System Settings
+
+            **中文:**
+            1. 下载 `Aura-${{ steps.info.outputs.version }}.dmg`
+            2. 打开 DMG 文件
+            3. 将 Aura 拖动到应用程序文件夹
+            4. 在"系统设置 > 隐私与安全性 > 辅助功能"中授权
+
+            ### 📋 Changes / 更新内容
+            ${{ github.event.pull_request.body }}
+
+            ### 🔐 Checksums / 校验和
+            See `checksums.txt` file / 见 `checksums.txt` 文件
+
+            ### 📖 Full Documentation / 完整文档
+            [README.md](https://github.com/${{ github.repository }}/blob/main/README.md)
+
+            ---
+            **PR:** #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 💬 评论 PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🎉 Release Created Successfully!
+
+            **Release:** [${{ steps.info.outputs.release_tag }}](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/tag/${{ steps.info.outputs.release_tag }})
+            **DMG:** \`Aura-${{ steps.info.outputs.version }}.dmg\`
+
+            ### 📦 Assets
+            - ✅ DMG file uploaded
+            - ✅ Checksums generated
+            - ✅ Release notes published
+
+            The release is now available for download! 🚀`
+            })
+
+      - name: ✅ 发布完成
+        run: |
+          echo "🎉 Release ${{ steps.info.outputs.release_tag }} created successfully!"
+          echo "📦 DMG: ${{ steps.info.outputs.dmg_name }}"
+          echo "🔗 URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.info.outputs.release_tag }}"

@@ -1,0 +1,51 @@
+# Release Drafter 配置 (可选,用于自动生成 Release Notes)
+
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+categories:
+  - title: '🚀 Features / 新功能'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: '🐛 Bug Fixes / 修复'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+  - title: '📚 Documentation / 文档'
+    labels:
+      - 'documentation'
+      - 'docs'
+  - title: '🛠️ Maintenance / 维护'
+    labels:
+      - 'chore'
+      - 'dependencies'
+
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+
+version-resolver:
+  major:
+    labels:
+      - 'major'
+  minor:
+    labels:
+      - 'minor'
+  patch:
+    labels:
+      - 'patch'
+  default: patch
+
+template: |
+  ## 🎉 What's Changed / 更新内容
+
+  $CHANGES
+
+  ## 📦 Installation / 安装
+
+  Download the DMG file and drag to Applications folder.
+  下载 DMG 文件并拖动到应用程序文件夹。
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
