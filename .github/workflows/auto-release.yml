@@ -1,0 +1,174 @@
+name: Auto Release on Main Push
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/**'
+      - '!.github/workflows/**'
+
+permissions:
+  contents: write
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 检查是否需要发布
+        id: check
+        run: |
+          # 获取当前版本号
+          VERSION=$(grep "MARKETING_VERSION:" project.yml | awk '{print $2}' | tr -d '"')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+          # 检查 tag 是否已存在
+          if git rev-parse "v${VERSION}" >/dev/null 2>&1; then
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "⏭️ Tag v${VERSION} 已存在,跳过发布"
+          else
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "✅ 需要创建新版本 v${VERSION}"
+          fi
+
+  build-and-release:
+    needs: check-version
+    if: needs.check-version.outputs.should_release == 'true'
+    runs-on: macos-14
+
+    steps:
+      - name: 📥 Checkout 代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 设置 Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: 📦 安装依赖
+        run: |
+          brew install xcodegen
+
+      - name: 🔍 显示环境信息
+        run: |
+          echo "Version: ${{ needs.check-version.outputs.version }}"
+          xcodebuild -version
+          swift --version
+
+      - name: 🏗️ 生成 Xcode 项目
+        run: |
+          xcodegen generate
+
+      - name: 🔨 构建应用
+        run: |
+          chmod +x scripts/build.sh
+          ./scripts/build.sh
+
+      - name: 📦 创建 DMG
+        run: |
+          chmod +x scripts/create-dmg.sh
+          ./scripts/create-dmg.sh
+
+      - name: 📋 获取版本信息
+        id: info
+        run: |
+          VERSION="${{ needs.check-version.outputs.version }}"
+          RELEASE_TAG="v${VERSION}"
+
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
+          echo "dmg_name=Aura-${VERSION}.dmg" >> $GITHUB_OUTPUT
+
+      - name: 🔐 计算校验和
+        run: |
+          cd build
+          shasum -a 256 *.dmg > checksums.txt
+          cat checksums.txt
+
+      - name: 📝 生成 Release Notes
+        id: changelog
+        run: |
+          # 获取上一个 tag
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$LAST_TAG" ]; then
+            # 首次发布
+            CHANGES=$(git log --pretty=format:"- %s (%h)" --reverse)
+          else
+            # 增量更新
+            CHANGES=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)")
+          fi
+
+          # 保存到文件
+          cat > release-notes.md <<EOF
+          ## 🎉 What's New / 更新内容
+
+          ${CHANGES}
+
+          ## 📥 Installation / 安装
+
+          **English:**
+          1. Download \`Aura-${{ steps.info.outputs.version }}.dmg\`
+          2. Open the DMG file
+          3. Drag Aura to Applications folder
+          4. Grant Accessibility permission in System Settings
+
+          **中文:**
+          1. 下载 \`Aura-${{ steps.info.outputs.version }}.dmg\`
+          2. 打开 DMG 文件
+          3. 将 Aura 拖动到应用程序文件夹
+          4. 在"系统设置 > 隐私与安全性 > 辅助功能"中授权
+
+          ## ✨ Features / 功能
+          - 🖱️ Mouse click highlighting / 鼠标点击高亮效果
+          - 🎨 Multiple color themes / 多种颜色主题
+          - 📏 Adjustable border thickness / 可自定义边框厚度
+          - 🚀 Lightweight, low resource usage / 轻量级,低资源占用
+
+          ## 🔐 Checksums / 校验和
+          See \`checksums.txt\` file / 见 \`checksums.txt\` 文件
+
+          ---
+          **Full Changelog:** https://github.com/\${{ github.repository }}/compare/${LAST_TAG}...${{ steps.info.outputs.release_tag }}
+          EOF
+
+          echo "release_notes_file=release-notes.md" >> $GITHUB_OUTPUT
+
+      - name: 🏷️ 创建 Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.info.outputs.release_tag }}" -m "Release ${{ steps.info.outputs.release_tag }}"
+          git push origin "${{ steps.info.outputs.release_tag }}"
+
+      - name: 📤 创建 GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.info.outputs.release_tag }}
+          name: Aura ${{ steps.info.outputs.release_tag }}
+          body_path: release-notes.md
+          files: |
+            build/Aura-*.dmg
+            build/checksums.txt
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ✅ 发布完成
+        run: |
+          echo "🎉 Release ${{ steps.info.outputs.release_tag }} created!"
+          echo "📦 DMG: ${{ steps.info.outputs.dmg_name }}"
+          echo "🔗 URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.info.outputs.release_tag }}"
