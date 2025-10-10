@@ -1,0 +1,96 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # 触发条件: 推送 v* 标签 (如 v1.0.0)
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build-and-release:
+    runs-on: macos-14  # 使用最新的 macOS runner
+
+    steps:
+      - name: 📥 Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: 🔧 设置 Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: 📦 安装 XcodeGen
+        run: |
+          brew install xcodegen
+
+      - name: 🔍 显示环境信息
+        run: |
+          xcodebuild -version
+          swift --version
+          xcodegen --version
+
+      - name: 🏗️ 生成 Xcode 项目
+        run: |
+          xcodegen generate
+
+      - name: 🔨 构建应用
+        run: |
+          chmod +x scripts/build.sh
+          ./scripts/build.sh
+
+      - name: 📦 创建 DMG
+        run: |
+          chmod +x scripts/create-dmg.sh
+          ./scripts/create-dmg.sh
+
+      - name: 📋 获取版本信息
+        id: version
+        run: |
+          VERSION=$(defaults read "$(pwd)/build/Export/Aura.app/Contents/Info.plist" CFBundleShortVersionString)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "dmg_name=Aura-${VERSION}.dmg" >> $GITHUB_OUTPUT
+
+      - name: 🔐 计算校验和
+        run: |
+          cd build
+          shasum -a 256 *.dmg > checksums.txt
+          cat checksums.txt
+
+      - name: 📤 创建 GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            build/Aura-*.dmg
+            build/checksums.txt
+          body: |
+            ## 🎉 Aura v${{ steps.version.outputs.version }}
+
+            ### 📥 下载
+            下载下方的 DMG 文件进行安装
+
+            ### ✨ 功能
+            - 🖱️ 鼠标点击高亮效果
+            - 🎨 多种颜色主题
+            - ⚙️ 可自定义边框厚度
+            - 🚀 轻量级,低资源占用
+
+            ### 📝 安装说明
+            1. 下载 `Aura-${{ steps.version.outputs.version }}.dmg`
+            2. 打开 DMG 文件
+            3. 将 Aura 拖动到应用程序文件夹
+            4. 首次运行时需要在"系统设置 > 隐私与安全性 > 辅助功能"中授权
+
+            ### 🔐 校验和
+            见 `checksums.txt` 文件
+
+            ### 📖 完整文档
+            访问 [README.md](https://github.com/${{ github.repository }}/blob/main/README.md)
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ✅ 发布完成
+        run: |
+          echo "🎉 Release v${{ steps.version.outputs.version }} 创建成功!"
+          echo "📦 DMG: ${{ steps.version.outputs.dmg_name }}"

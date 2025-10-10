@@ -1,0 +1,50 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - name: 📥 Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: 🔧 设置 Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: 📦 安装依赖
+        run: |
+          brew install xcodegen
+
+      - name: 🏗️ 生成项目
+        run: |
+          xcodegen generate
+
+      - name: 🔨 构建
+        run: |
+          xcodebuild build \
+            -project Aura.xcodeproj \
+            -scheme Aura \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: 🧪 运行测试
+        run: |
+          xcodebuild test \
+            -project Aura.xcodeproj \
+            -scheme Aura \
+            -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: ✅ 构建成功
+        run: echo "✨ 构建和测试通过!"

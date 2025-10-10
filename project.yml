@@ -1,0 +1,43 @@
+name: Aura
+options:
+  bundleIdPrefix: com.aura
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+
+targets:
+  Aura:
+    type: application
+    platform: macOS
+    sources:
+      - path: Aura
+        name: Aura
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aura.Aura
+        DEVELOPMENT_TEAM: ""
+        INFOPLIST_FILE: Aura/Info.plist
+        SWIFT_VERSION: "5.9"
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        COMBINE_HIDPI_IMAGES: YES
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 1.0
+        GENERATE_INFOPLIST_FILE: YES
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
+
+  AuraTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: AuraTests
+    dependencies:
+      - target: Aura
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aura.AuraTests
+        SWIFT_VERSION: "5.9"
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
+        CODE_SIGN_STYLE: Automatic
+        COMBINE_HIDPI_IMAGES: YES
