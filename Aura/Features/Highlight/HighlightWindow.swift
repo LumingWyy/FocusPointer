@@ -6,15 +6,19 @@ import SwiftUI
 final class HighlightWindow: NSWindow {
     // MARK: - Properties
 
-    /// 边框尺寸
-    private let borderSize: CGFloat = 80
+    /// 当前设置
+    private var settings: HighlightSettings
 
-    /// 边框厚度
-    private let borderWidth: CGFloat = 4
+    /// 边框尺寸
+    private var borderSize: CGFloat {
+        settings.borderThickness.circleSize
+    }
 
     // MARK: - Initialization
 
-    init() {
+    init(settings: HighlightSettings = .default) {
+        self.settings = settings
+
         // 创建一个覆盖全屏的透明窗口
         super.init(
             contentRect: .zero,
@@ -36,9 +40,25 @@ final class HighlightWindow: NSWindow {
         self.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         self.ignoresMouseEvents = true  // 不拦截鼠标事件
 
-        // 设置内容视图
-        let hostingView = NSHostingView(rootView: HighlightView())
+        updateContent()
+    }
+
+    /// 更新窗口内容
+    private func updateContent() {
+        let hostingView = NSHostingView(
+            rootView: HighlightView(
+                colors: settings.colorTheme.colors,
+                lineWidth: settings.borderThickness.lineWidth
+            )
+        )
         self.contentView = hostingView
+    }
+
+    /// 更新设置
+    /// - Parameter settings: 新的设置
+    func updateSettings(_ settings: HighlightSettings) {
+        self.settings = settings
+        updateContent()
     }
 
     // MARK: - Public Methods
@@ -100,24 +120,19 @@ final class HighlightWindow: NSWindow {
 
 /// 高亮效果的 SwiftUI 视图
 private struct HighlightView: View {
+    let colors: [Color]
+    let lineWidth: CGFloat
+
     var body: some View {
         Circle()
             .strokeBorder(
                 AngularGradient(
-                    gradient: Gradient(colors: [
-                        .red,
-                        .orange,
-                        .yellow,
-                        .green,
-                        .blue,
-                        .purple,
-                        .red
-                    ]),
+                    gradient: Gradient(colors: colors),
                     center: .center,
                     startAngle: .degrees(0),
                     endAngle: .degrees(360)
                 ),
-                lineWidth: 4
+                lineWidth: lineWidth
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(8)

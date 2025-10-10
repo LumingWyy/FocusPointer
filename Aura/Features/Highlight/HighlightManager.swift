@@ -25,13 +25,18 @@ final class HighlightManager: ObservableObject {
     /// 高亮窗口
     private var highlightWindow: HighlightWindow?
 
+    /// 设置管理器
+    private let settingsManager: SettingsManager
+
     /// 订阅集合
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initialization
 
-    init() {
+    init(settingsManager: SettingsManager) {
+        self.settingsManager = settingsManager
         setupObservers()
+        observeSettings()
     }
 
     // MARK: - Setup
@@ -62,6 +67,16 @@ final class HighlightManager: ObservableObject {
             .store(in: &cancellables)
     }
 
+    /// 监听设置变化
+    private func observeSettings() {
+        settingsManager.$settings
+            .sink { [weak self] settings in
+                self?.highlightWindow?.updateSettings(settings)
+                print("⚙️ 高亮设置已更新: \(settings.colorTheme.rawValue), \(settings.borderThickness.rawValue)")
+            }
+            .store(in: &cancellables)
+    }
+
     // MARK: - Private Methods
 
     /// 开始高亮功能
@@ -80,7 +95,7 @@ final class HighlightManager: ObservableObject {
     /// 显示高亮效果
     private func showHighlight() {
         if highlightWindow == nil {
-            highlightWindow = HighlightWindow()
+            highlightWindow = HighlightWindow(settings: settingsManager.settings)
         }
 
         let location = mouseMonitor.mouseLocation

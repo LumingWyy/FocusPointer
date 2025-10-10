@@ -13,7 +13,11 @@
 		43262283C7135E3668236C60 /* HighlightManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E63E7F08CE6E833430F0E /* HighlightManager.swift */; };
 		4C521A7A33C33F9D1A4D6F48 /* MouseEventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF11563D134D699389B64D83 /* MouseEventMonitor.swift */; };
 		7E2B167F06376F60B8048A75 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F299C28897DD3A885294A9 /* AppState.swift */; };
+		CE456453DD71AD40376D3B00 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D177982A3A8E5ECE3D890C /* SettingsView.swift */; };
 		D0E1CB45E36209FC5FE4B5B6 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BFFBD92E38976B4224FAD5 /* MenuBarView.swift */; };
+		E49C6E4A6E32C173F5AA3CA3 /* HighlightSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95483A71AF62EA6788B43A76 /* HighlightSettings.swift */; };
+		E619760DF20DC5E0CEC147D2 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71EB35DD2400C7E449552BA0 /* SettingsManager.swift */; };
+		E803F97DB87B207AE6AD3FBA /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A35E5312951F53CFADEBA7 /* SettingsWindow.swift */; };
 		F0094E7B17371D5E1E9188FE /* AuraAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39442EB62824EF7133F66421 /* AuraAppTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,10 +35,14 @@
 		0BAA732B8643FD7BBCAF2CC5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		15F299C28897DD3A885294A9 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		39442EB62824EF7133F66421 /* AuraAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraAppTests.swift; sourceTree = "<group>"; };
+		45A35E5312951F53CFADEBA7 /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
+		45D177982A3A8E5ECE3D890C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4A9E59AC258B2C2BA91E5EF7 /* Aura.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aura.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57BFFBD92E38976B4224FAD5 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		5887C106111B2A99B605D27D /* AuraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraApp.swift; sourceTree = "<group>"; };
 		701E63E7F08CE6E833430F0E /* HighlightManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightManager.swift; sourceTree = "<group>"; };
+		71EB35DD2400C7E449552BA0 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		95483A71AF62EA6788B43A76 /* HighlightSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightSettings.swift; sourceTree = "<group>"; };
 		CF11563D134D699389B64D83 /* MouseEventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseEventMonitor.swift; sourceTree = "<group>"; };
 		D8CF4CF9E7D0954FEFB3E954 /* AuraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AuraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E28A2A273CD4374BE80FB82B /* HighlightWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightWindow.swift; sourceTree = "<group>"; };
@@ -68,6 +76,15 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
+		2A99485623CC7EB6534F1EF5 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				45D177982A3A8E5ECE3D890C /* SettingsView.swift */,
+				45A35E5312951F53CFADEBA7 /* SettingsWindow.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		70F154C5D59F3DC8F0604BE9 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -80,6 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				CF11563D134D699389B64D83 /* MouseEventMonitor.swift */,
+				71EB35DD2400C7E449552BA0 /* SettingsManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -111,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				15F299C28897DD3A885294A9 /* AppState.swift */,
+				95483A71AF62EA6788B43A76 /* HighlightSettings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -127,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				106E6E83D325D24BC415DB82 /* Highlight */,
+				2A99485623CC7EB6534F1EF5 /* Settings */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -236,9 +256,13 @@
 				7E2B167F06376F60B8048A75 /* AppState.swift in Sources */,
 				01F42A4B2F6AC8A238982BE9 /* AuraApp.swift in Sources */,
 				43262283C7135E3668236C60 /* HighlightManager.swift in Sources */,
+				E49C6E4A6E32C173F5AA3CA3 /* HighlightSettings.swift in Sources */,
 				2BD1CBAB279DDFB7E4A0E0A6 /* HighlightWindow.swift in Sources */,
 				D0E1CB45E36209FC5FE4B5B6 /* MenuBarView.swift in Sources */,
 				4C521A7A33C33F9D1A4D6F48 /* MouseEventMonitor.swift in Sources */,
+				E619760DF20DC5E0CEC147D2 /* SettingsManager.swift in Sources */,
+				CE456453DD71AD40376D3B00 /* SettingsView.swift in Sources */,
+				E803F97DB87B207AE6AD3FBA /* SettingsWindow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
