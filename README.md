@@ -1,21 +1,280 @@
-# Aura - macOS 鼠标点击高亮工具
+# Aura - macOS Mouse Click Highlighter / macOS 鼠标点击高亮工具
 
 <div align="center">
 
 ![Aura Logo](docs/images/logo.png)
 
-**优雅的鼠标点击视觉反馈工具,让你的演示更清晰**
+**Elegant visual feedback for mouse clicks - Make your presentations crystal clear**
+**优雅的鼠标点击视觉反馈工具 - 让你的演示更清晰**
 
 [![Build Status](https://github.com/YOUR_USERNAME/FocusPointer/workflows/Build%20and%20Test/badge.svg)](https://github.com/YOUR_USERNAME/FocusPointer/actions)
 [![Release](https://img.shields.io/github/v/release/YOUR_USERNAME/FocusPointer)](https://github.com/YOUR_USERNAME/FocusPointer/releases)
 [![License](https://img.shields.io/github/license/YOUR_USERNAME/FocusPointer)](LICENSE)
 [![macOS](https://img.shields.io/badge/macOS-13.0+-blue.svg)](https://www.apple.com/macos/)
 
-[下载](https://github.com/YOUR_USERNAME/FocusPointer/releases) • [功能](#-功能) • [安装](#-安装) • [使用](#-使用) • [开发](#-开发)
+[English](#english) • [中文](#中文)
 
 </div>
 
 ---
+
+<a name="english"></a>
+## 📖 Introduction
+
+Aura is a lightweight mouse click highlighter designed specifically for macOS. During screen presentations, online teaching, and remote collaboration, it displays an elegant colored gradient border around mouse clicks, making it easy for your audience to follow your actions.
+
+### Why Choose Aura?
+
+- 🎯 **Precise Tracking**: Never lose your cursor in complex interfaces
+- 🎨 **Beautiful & Comfortable**: Smooth gradient animations that don't disrupt your workflow
+- ⚡ **High Performance**: Minimal resource usage with zero impact on system performance
+- 🛠️ **Highly Customizable**: Multiple color themes and size options
+- 🔒 **Privacy First**: Runs completely locally, collects no data
+
+---
+
+## ✨ Features
+
+### Core Features
+
+- **🖱️ Real-time Highlighting**: Display colored gradient border when holding left mouse button
+- **🎨 Multiple Themes**: 5+ preset color themes to choose from
+- **📏 Adjustable Size**: Small, medium, and large border thickness options
+- **⚙️ Global Toggle**: Enable/disable with one click from menu bar
+- **💾 Remember Settings**: Automatically save your preferences
+
+### Technical Features
+
+- ✅ Native macOS application (Swift + SwiftUI)
+- ✅ Supports macOS 13.0 (Ventura) and above
+- ✅ Menu bar resident, doesn't occupy Dock space
+- ✅ Fully open source, MIT license
+
+---
+
+## 💾 Installation
+
+### Method 1: Download DMG (Recommended)
+
+1. Go to [Releases page](https://github.com/YOUR_USERNAME/FocusPointer/releases)
+2. Download the latest `Aura-x.x.x.dmg`
+3. Open the DMG file
+4. Drag **Aura** to **Applications** folder
+
+### Method 2: Using Homebrew
+
+```bash
+brew install --cask aura
+```
+
+### First Run
+
+1. Find and open **Aura** in **Applications**
+2. If you see "cannot be opened" prompt:
+   - Go to **System Settings > Privacy & Security**
+   - Click "Open Anyway"
+3. Grant **Accessibility** permission:
+   - **System Settings > Privacy & Security > Accessibility**
+   - Check **Aura**
+
+---
+
+## 🚀 Usage
+
+### Quick Start
+
+1. **Launch app**: Aura appears in menu bar (top right corner)
+2. **Click menu bar icon**, select **"Enable Highlighting"**
+3. **Hold left mouse button**, see the highlighting effect immediately!
+
+### Customize Settings
+
+Click menu bar icon → **"Settings..."** → Adjust:
+
+- **Border Thickness**: Small / Medium / Large
+- **Color Theme**:
+  - 🌈 Rainbow Gradient (Default)
+  - 🔵 Blue Theme
+  - 💚 Green Theme
+  - 🔴 Red Theme
+  - 🟣 Purple Theme
+
+### Keyboard Shortcuts (Planned)
+
+- `⌘ + Shift + H`: Toggle enable/disable
+- `⌘ + Shift + ,`: Open settings
+
+---
+
+## 🛠️ Development
+
+### Requirements
+
+- macOS 13.0+
+- Xcode 15.0+
+- Swift 5.9+
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+
+### Clone Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/FocusPointer.git
+cd FocusPointer
+```
+
+### Install Dependencies
+
+```bash
+brew install xcodegen
+```
+
+### Generate Project
+
+```bash
+xcodegen generate
+```
+
+### Open in Xcode
+
+```bash
+open Aura.xcodeproj
+```
+
+### Build and Run
+
+**Method 1: Xcode**
+- Select `Aura` scheme
+- Press `⌘ + R` to run
+
+**Method 2: Command Line**
+```bash
+# Development build
+./scripts/build.sh
+
+# Create DMG
+./scripts/create-dmg.sh
+
+# Full release workflow
+./scripts/release.sh
+```
+
+---
+
+## 📦 Packaging and Release
+
+### Local Packaging
+
+```bash
+# 1. Build application
+./scripts/build.sh
+
+# 2. Create DMG
+./scripts/create-dmg.sh
+
+# Output: build/Aura-x.x.x.dmg
+```
+
+### Code Signing and Notarization (Optional)
+
+If you have an Apple Developer account:
+
+```bash
+# Edit scripts/sign-and-notarize.sh configuration
+# Then run:
+./scripts/sign-and-notarize.sh
+```
+
+### Auto-publish to GitHub
+
+GitHub Actions automation is configured:
+
+```bash
+# 1. Create version tag
+git tag v1.0.0
+git push origin v1.0.0
+
+# 2. GitHub Actions will automatically:
+#    - Build application
+#    - Create DMG
+#    - Publish Release
+```
+
+---
+
+## 📁 Project Structure
+
+```
+FocusPointer/
+├── Aura/                   # Main application code
+│   ├── App/               # Application entry point
+│   ├── Core/              # Core functionality
+│   ├── Features/          # Feature modules
+│   ├── Models/            # Data models
+│   └── Services/          # Service layer
+├── scripts/               # Build scripts
+│   ├── build.sh          # Build script
+│   ├── create-dmg.sh     # DMG packaging
+│   ├── release.sh        # Release workflow
+│   └── sign-and-notarize.sh  # Signing and notarization
+├── .github/
+│   └── workflows/        # GitHub Actions
+├── docs/                 # Documentation
+├── project.yml           # XcodeGen configuration
+└── README.md
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Please check [CONTRIBUTING.md](CONTRIBUTING.md)
+
+### Roadmap
+
+- [x] Basic highlighting functionality
+- [x] Custom color themes
+- [x] Adjustable border thickness
+- [ ] Keyboard shortcut support
+- [ ] Right-click highlighting
+- [ ] Drag trail display
+- [ ] Multi-monitor support optimization
+- [ ] More animation effects
+
+---
+
+## 📄 License
+
+[MIT License](LICENSE) © 2025
+
+---
+
+## 💬 Support
+
+- 🐛 [Report Bug](https://github.com/YOUR_USERNAME/FocusPointer/issues/new?template=bug_report.md)
+- 💡 [Feature Request](https://github.com/YOUR_USERNAME/FocusPointer/issues/new?template=feature_request.md)
+- 💬 [Discussions](https://github.com/YOUR_USERNAME/FocusPointer/discussions)
+
+---
+
+## 🙏 Acknowledgments
+
+Thanks to all contributors and supporters!
+
+---
+
+<div align="center">
+
+**If you find it useful, please give it a ⭐️!**
+
+Made with ❤️ for the macOS community
+
+</div>
+
+---
+---
+
+<a name="中文"></a>
+# 中文说明
 
 ## 📖 简介
 
