@@ -9,7 +9,7 @@ final class AppState: ObservableObject {
     static let shared = AppState()
 
     /// 设置管理器
-    @Published var settingsManager = SettingsManager()
+    @Published var settingsManager: SettingsManager
 
     /// 高亮管理器
     @Published var highlightManager: HighlightManager
@@ -18,8 +18,12 @@ final class AppState: ObservableObject {
     private var settingsWindowController: SettingsWindowController?
 
     /// 私有初始化确保单例模式
-    private init() {
-        self.highlightManager = HighlightManager(settingsManager: settingsManager)
+    private init(
+        settingsManager: SettingsManager = SettingsManager(),
+        mouseMonitor: MouseEventMonitoring = MouseEventMonitor()
+    ) {
+        self.settingsManager = settingsManager
+        self.highlightManager = HighlightManager(settingsManager: settingsManager, mouseMonitor: mouseMonitor)
         self.settingsWindowController = SettingsWindowController(settingsManager: settingsManager)
     }
 
