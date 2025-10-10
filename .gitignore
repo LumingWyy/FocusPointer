@@ -141,3 +141,6 @@ temp/
 agents/
 expansion-packs/
 teams/
+/.bmad-core/
+/.bmad-infrastructure-devops/
+/.claude/
