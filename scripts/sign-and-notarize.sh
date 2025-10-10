@@ -10,26 +10,41 @@ NC='\033[0m'
 
 echo -e "${GREEN}🔐 代码签名和公证流程${NC}\n"
 
+# 可选: 读取本地环境变量 (.env)
+if [ -f .env ]; then
+  echo -e "${YELLOW}📄 载入 .env 配置...${NC}"
+  # shellcheck disable=SC1091
+  source .env
+fi
+
 # 配置 - 需要替换为实际的开发者信息
-DEVELOPER_ID_APP="Developer ID Application: Your Name (TEAM_ID)"
-DEVELOPER_ID_INSTALLER="Developer ID Installer: Your Name (TEAM_ID)"
-APPLE_ID="your-apple-id@example.com"
-TEAM_ID="YOUR_TEAM_ID"
-APP_SPECIFIC_PASSWORD="xxxx-xxxx-xxxx-xxxx"  # 从 appleid.apple.com 生成
+DEVELOPER_ID_APP="${DEVELOPER_ID_APP:-Developer ID Application: Your Name (TEAM_ID)}"
+DEVELOPER_ID_INSTALLER="${DEVELOPER_ID_INSTALLER:-Developer ID Installer: Your Name (TEAM_ID)}"
+APPLE_ID="${APPLE_ID:-your-apple-id@example.com}"
+TEAM_ID="${TEAM_ID:-YOUR_TEAM_ID}"
+APP_SPECIFIC_PASSWORD="${APP_SPECIFIC_PASSWORD:-xxxx-xxxx-xxxx-xxxx}"  # 从 appleid.apple.com 生成
 
 PROJECT_NAME="Aura"
 APP_PATH="build/Export/${PROJECT_NAME}.app"
-DMG_PATH="build/${PROJECT_NAME}.dmg"
+
+# 读取版本并定位 DMG 文件
+if [ -d "$APP_PATH" ]; then
+  VERSION=$(defaults read "$(pwd)/${APP_PATH}/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "1.0")
+else
+  VERSION="1.0"
+fi
+DMG_PATH="build/${PROJECT_NAME}-${VERSION}.dmg"
 
 # 检查配置
 echo -e "${YELLOW}⚙️  检查配置...${NC}"
-if [[ "$DEVELOPER_ID_APP" == *"Your Name"* ]]; then
+if [[ "$DEVELOPER_ID_APP" == *"Your Name"* ]] || [[ "$APPLE_ID" == "your-apple-id@example.com" ]] || [[ "$TEAM_ID" == "YOUR_TEAM_ID" ]] || [[ "$APP_SPECIFIC_PASSWORD" == "xxxx-xxxx-xxxx-xxxx" ]]; then
     echo -e "${RED}❌ 错误: 请先配置开发者信息${NC}"
     echo -e "${YELLOW}需要配置的变量:${NC}"
     echo -e "  - DEVELOPER_ID_APP"
     echo -e "  - APPLE_ID"
     echo -e "  - TEAM_ID"
     echo -e "  - APP_SPECIFIC_PASSWORD"
+    echo -e "\n${YELLOW}建议:${NC} 在项目根目录创建 .env 文件 (参见 .env.example)"
     echo -e "\n${BLUE}📖 获取信息:${NC}"
     echo -e "1. 开发者证书: security find-identity -v -p codesigning"
     echo -e "2. 团队 ID: https://developer.apple.com/account"
@@ -81,11 +96,16 @@ echo -e "${YELLOW}📤 上传至 Apple 公证服务...${NC}"
 echo -e "${YELLOW}⏳ 这可能需要几分钟...${NC}\n"
 
 # 使用 notarytool 公证 (Xcode 13+)
-xcrun notarytool submit "${DMG_PATH}" \
-    --apple-id "$APPLE_ID" \
-    --team-id "$TEAM_ID" \
-    --password "$APP_SPECIFIC_PASSWORD" \
-    --wait
+if [ -n "$KEYCHAIN_PROFILE" ]; then
+  # 如果事先用 notarytool store-credentials 配置过钥匙串配置档
+  xcrun notarytool submit "${DMG_PATH}" --keychain-profile "$KEYCHAIN_PROFILE" --wait
+else
+  xcrun notarytool submit "${DMG_PATH}" \
+      --apple-id "$APPLE_ID" \
+      --team-id "$TEAM_ID" \
+      --password "$APP_SPECIFIC_PASSWORD" \
+      --wait
+fi
 
 # 装订公证票据
 echo -e "\n${YELLOW}📎 装订公证票据...${NC}"
