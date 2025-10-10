@@ -3,7 +3,7 @@ import AppKit
 
 /// 设置窗口控制器
 /// 管理设置窗口的生命周期
-final class SettingsWindowController {
+final class SettingsWindowController: NSObject {
     // MARK: - Properties
 
     /// 窗口实例
