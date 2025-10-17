@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import AppKit
 
 /// 应用全局状态管理
 /// 遵循 MVVM 架构模式,提供集中式状态管理
@@ -17,6 +18,9 @@ final class AppState: ObservableObject {
     /// 设置窗口控制器
     private var settingsWindowController: SettingsWindowController?
 
+    /// 调试用临时高亮窗口引用
+    private var debugWindow: HighlightWindow?
+
     /// 私有初始化确保单例模式
     private init(
         settingsManager: SettingsManager = SettingsManager(),
@@ -25,6 +29,10 @@ final class AppState: ObservableObject {
         self.settingsManager = settingsManager
         self.highlightManager = HighlightManager(settingsManager: settingsManager, mouseMonitor: mouseMonitor)
         self.settingsWindowController = SettingsWindowController(settingsManager: settingsManager)
+
+        // 启动即自动启用高亮，并显示设置窗口以便用户可见地调整
+        self.highlightManager.isEnabled = true
+        self.settingsWindowController?.show()
     }
 
     // MARK: - Application Actions
@@ -49,5 +57,18 @@ final class AppState: ObservableObject {
 
         let status = highlightManager.isEnabled ? "已启用" : "已禁用"
         print("✨ 高亮效果\(status)")
+    }
+
+    /// 调试: 在当前鼠标位置闪现一次高亮
+    func debugFlashHighlightOnce() {
+        let window = HighlightWindow(settings: settingsManager.settings)
+        self.debugWindow = window
+        let location = NSEvent.mouseLocation
+        window.show(at: location)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            window.hide {
+                self?.debugWindow = nil
+            }
+        }
     }
 }

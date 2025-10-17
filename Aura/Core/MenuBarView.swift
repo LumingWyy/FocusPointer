@@ -18,6 +18,12 @@ struct MenuBarView: View {
 
             Divider()
 
+            Button("调试：闪现高亮一次") {
+                appState.debugFlashHighlightOnce()
+            }
+
+            Divider()
+
             Button(MenuBarStrings.quit) {
                 appState.quitApplication()
             }

@@ -51,7 +51,22 @@ final class HighlightWindow: NSWindow {
                 lineWidth: settings.borderThickness.lineWidth
             )
         )
-        self.contentView = hostingView
+
+        // 使用容器视图和自动布局，确保内容始终充满窗口
+        let container = NSView(frame: NSRect(origin: .zero, size: self.frame.size))
+        container.translatesAutoresizingMaskIntoConstraints = false
+
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(hostingView)
+
+        NSLayoutConstraint.activate([
+            hostingView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: container.topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+
+        self.contentView = container
     }
 
     /// 更新设置
@@ -124,17 +139,33 @@ private struct HighlightView: View {
     let lineWidth: CGFloat
 
     var body: some View {
-        Circle()
-            .strokeBorder(
-                AngularGradient(
-                    gradient: Gradient(colors: colors),
-                    center: .center,
-                    startAngle: .degrees(0),
-                    endAngle: .degrees(360)
-                ),
-                lineWidth: lineWidth
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(8)
+        TimelineView(.animation) { timeline in
+            // 动态旋转渐变方向（更直观的颜色变化）
+            let seconds = timeline.date.timeIntervalSinceReferenceDate
+            let period: Double = 2.0 // 2 秒转一圈
+            let t = (seconds.truncatingRemainder(dividingBy: period)) / period
+            let theta = 2 * .pi * t
+
+            // 计算旋转后的起止点
+            let sx = 0.5 + 0.5 * cos(theta)
+            let sy = 0.5 + 0.5 * sin(theta)
+            let ex = 0.5 - 0.5 * cos(theta)
+            let ey = 0.5 - 0.5 * sin(theta)
+
+            let start = UnitPoint(x: sx, y: sy)
+            let end = UnitPoint(x: ex, y: ey)
+
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(
+                    LinearGradient(
+                        gradient: Gradient(colors: colors),
+                        startPoint: start,
+                        endPoint: end
+                    ),
+                    lineWidth: lineWidth
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(8)
+        }
     }
 }

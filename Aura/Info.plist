@@ -22,5 +22,7 @@
     <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
     <key>LSUIElement</key>
     <true/>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Aura 需要辅助功能权限来监听鼠标移动事件,以便在鼠标指针附近显示高亮效果。</string>
 </dict>
 </plist>
