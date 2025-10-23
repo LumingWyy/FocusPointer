@@ -183,6 +183,7 @@ final class HighlightWindow: NSWindow {
 // MARK: - SwiftUI 视图与模型
 
 /// 供视图绑定的矩形模型
+@MainActor
 private final class RectModel: ObservableObject {
     @Published var rect: CGRect? = nil
 }
@@ -194,7 +195,7 @@ private struct HighlightRectView: View {
     let lineWidth: CGFloat
 
     var body: some View {
-        TimelineView(.animation) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0/30.0)) { timeline in
             // 动态旋转渐变方向
             let seconds = timeline.date.timeIntervalSinceReferenceDate
             let period: Double = 2.0
