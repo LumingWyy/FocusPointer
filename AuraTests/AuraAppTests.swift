@@ -107,7 +107,7 @@ final class MenuBarViewTests: XCTestCase {
 
     func testMenuBarViewInitialization() {
         // Arrange & Act
-        let view = MenuBarView(appState: appState)
+        let view = MenuBarView(appState: appState, highlightManager: appState.highlightManager)
 
         // Assert
         // 验证视图能够成功初始化
@@ -116,7 +116,7 @@ final class MenuBarViewTests: XCTestCase {
 
     func testMenuBarViewBodyDoesNotCrash() {
         // Arrange
-        let view = MenuBarView(appState: appState)
+        let view = MenuBarView(appState: appState, highlightManager: appState.highlightManager)
 
         // Act & Assert
         // 验证访问 body 不会崩溃
