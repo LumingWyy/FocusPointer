@@ -73,7 +73,7 @@ final class HighlightManager: ObservableObject {
         settingsManager.$settings
             .sink { [weak self] settings in
                 self?.highlightWindow?.updateSettings(settings)
-                print("⚙️ 高亮设置已更新: \(settings.colorTheme.rawValue), \(settings.borderThickness.rawValue)")
+                print("⚙️ Highlight settings updated: theme=\(settings.colorTheme.displayName), thickness=\(settings.borderThickness))")
             }
             .store(in: &cancellables)
     }
@@ -83,14 +83,14 @@ final class HighlightManager: ObservableObject {
     /// 开始高亮功能
     private func startHighlighting() {
         mouseMonitor.startMonitoring()
-        print("✨ 高亮功能已启用")
+        print("✨ Highlighting enabled (awaiting mouse events)")
     }
 
     /// 停止高亮功能
     private func stopHighlighting() {
-        mouseMonitor.stopMonitoring()
+        // 保持鼠标监听常驻，仅隐藏高亮，避免重复触发系统权限弹窗
         hideHighlight()
-        print("⏸️ 高亮功能已禁用")
+        print("⏸️ Highlighting disabled (monitor remains active)")
     }
 
     /// 显示高亮效果
@@ -100,17 +100,26 @@ final class HighlightManager: ObservableObject {
         }
 
         let location = mouseMonitor.mouseLocation
-        highlightWindow?.show(at: location)
+        print("🎨 begin drag rect @ \(location)")
+        highlightWindow?.beginDrag(at: location)
     }
 
     /// 隐藏高亮效果
     private func hideHighlight() {
+        print("🎨 end drag rect (hide)")
         highlightWindow?.hide()
     }
 
     /// 更新高亮位置
     private func updateHighlightPosition(_ location: CGPoint) {
-        highlightWindow?.updatePosition(location)
+        highlightWindow?.updateDrag(to: location)
+        // Debug: print occasionally to avoid flooding
+        #if DEBUG
+        // sample every ~8px move
+        if Int(location.x) % 8 == 0 || Int(location.y) % 8 == 0 {
+            print("🎨 update rect @ \(location)")
+        }
+        #endif
     }
 
     // MARK: - Public Methods

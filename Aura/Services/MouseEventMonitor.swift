@@ -46,14 +46,12 @@ final class MouseEventMonitor: ObservableObject, MouseEventMonitoring {
     func startMonitoring() {
         guard !isMonitoring else { return }
 
-        // 请求辅助功能权限
+        // Request Accessibility permission (prompt). Try to install monitor even if not granted.
         let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
         let accessEnabled = AXIsProcessTrustedWithOptions(options)
-
-        guard accessEnabled else {
-            print("⚠️ 需要辅助功能权限才能监听鼠标事件")
+        if !accessEnabled {
+            print("⚠️ Accessibility not granted; attempting global mouse monitor anyway (please grant in System Settings)")
             openAccessibilityPreferences()
-            return
         }
 
         // 监听左键按下和松开事件
@@ -65,14 +63,24 @@ final class MouseEventMonitor: ObservableObject, MouseEventMonitoring {
             DispatchQueue.main.async {
                 switch event.type {
                 case .leftMouseDown:
-                    self.isMouseDown = true
+                    // 先更新位置，再发布按下，确保订阅者读取到最新位置
                     self.mouseLocation = NSEvent.mouseLocation
+                    self.isMouseDown = true
+                    #if DEBUG
+                    print("🖱️ down @ \(self.mouseLocation)")
+                    #endif
 
                 case .leftMouseUp:
                     self.isMouseDown = false
+                    #if DEBUG
+                    print("🖱️ up")
+                    #endif
 
                 case .leftMouseDragged:
                     self.mouseLocation = NSEvent.mouseLocation
+                    #if DEBUG
+                    print("🖱️ drag @ \(self.mouseLocation)")
+                    #endif
 
                 default:
                     break
@@ -81,7 +89,7 @@ final class MouseEventMonitor: ObservableObject, MouseEventMonitoring {
         }
 
         isMonitoring = true
-        print("✅ 开始监听鼠标事件")
+        print("✅ Global mouse monitor installed (AX: \(accessEnabled ? "granted" : "not granted"))")
     }
 
     /// 停止监听鼠标事件
@@ -95,7 +103,7 @@ final class MouseEventMonitor: ObservableObject, MouseEventMonitoring {
 
         isMonitoring = false
         isMouseDown = false
-        print("🛑 停止监听鼠标事件")
+        print("🛑 Stopped mouse monitoring")
     }
 
     // MARK: - Helpers

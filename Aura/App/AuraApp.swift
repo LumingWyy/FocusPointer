@@ -8,8 +8,8 @@ struct AuraApp: App {
     @StateObject private var appState = AppState.shared
 
     var body: some Scene {
-        MenuBarExtra("Aura", systemImage: "sparkles") {
-            MenuBarView(appState: appState)
+        MenuBarExtra(appState.highlightOn ? "Aura • On" : "Aura • Off", systemImage: "sparkles") {
+            MenuBarView(appState: appState, highlightManager: appState.highlightManager)
         }
     }
 }

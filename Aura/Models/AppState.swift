@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import AppKit
+import Combine
 
 /// 应用全局状态管理
 /// 遵循 MVVM 架构模式,提供集中式状态管理
@@ -15,24 +16,52 @@ final class AppState: ObservableObject {
     /// 高亮管理器
     @Published var highlightManager: HighlightManager
 
+    /// Mirror of highlight enabled state to trigger menu title updates
+    @Published var highlightOn: Bool = false
+
+    /// 键盘快捷键监视器
+    private let keyboardMonitor: KeyboardShortcutMonitor
+
     /// 设置窗口控制器
     private var settingsWindowController: SettingsWindowController?
 
     /// 调试用临时高亮窗口引用
     private var debugWindow: HighlightWindow?
 
+    /// 订阅集合
+    private var cancellables = Set<AnyCancellable>()
+
     /// 私有初始化确保单例模式
     private init(
         settingsManager: SettingsManager = SettingsManager(),
-        mouseMonitor: MouseEventMonitoring = MouseEventMonitor()
+        mouseMonitor: MouseEventMonitoring = MouseEventMonitor(),
+        keyboardMonitor: KeyboardShortcutMonitor = KeyboardShortcutMonitor()
     ) {
         self.settingsManager = settingsManager
         self.highlightManager = HighlightManager(settingsManager: settingsManager, mouseMonitor: mouseMonitor)
+        self.keyboardMonitor = keyboardMonitor
         self.settingsWindowController = SettingsWindowController(settingsManager: settingsManager)
 
         // 启动即自动启用高亮，并显示设置窗口以便用户可见地调整
         self.highlightManager.isEnabled = true
         self.settingsWindowController?.show()
+
+        // 安装全局快捷键：双击 Tab + ~
+        keyboardMonitor.startMonitoring()
+        keyboardMonitor.toggleRequested
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.toggleHighlight()
+            }
+            .store(in: &cancellables)
+
+        // Mirror highlight enabled for menu title updates
+        highlightManager.$isEnabled
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.highlightOn = value
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Application Actions
@@ -47,7 +76,7 @@ final class AppState: ObservableObject {
     /// - Note: Story 1.4 & 1.5 实现
     func showSettings() {
         settingsWindowController?.show()
-        print("⚙️ 打开设置窗口")
+        print("⚙️ Opened Settings window")
     }
 
     /// 切换高亮功能
@@ -55,8 +84,8 @@ final class AppState: ObservableObject {
     func toggleHighlight() {
         highlightManager.toggle()
 
-        let status = highlightManager.isEnabled ? "已启用" : "已禁用"
-        print("✨ 高亮效果\(status)")
+        let status = highlightManager.isEnabled ? "ON" : "OFF"
+        print("✨ Highlight is now \(status)")
     }
 
     /// 调试: 在当前鼠标位置闪现一次高亮

@@ -1,15 +1,15 @@
 import SwiftUI
 import AppKit
 
-/// 设置窗口控制器
-/// 管理设置窗口的生命周期
+/// Settings window controller
+/// Manages the settings window lifecycle
 final class SettingsWindowController: NSObject {
     // MARK: - Properties
 
-    /// 窗口实例
+    /// Window instance
     private var window: NSWindow?
 
-    /// 设置管理器
+    /// Settings manager
     private let settingsManager: SettingsManager
 
     // MARK: - Initialization
@@ -20,16 +20,16 @@ final class SettingsWindowController: NSObject {
 
     // MARK: - Public Methods
 
-    /// 显示设置窗口
+    /// Show settings window
     func show() {
-        // 如果窗口已存在,直接显示
+        // If window exists, bring to front
         if let existingWindow = window {
             existingWindow.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
             return
         }
 
-        // 创建新窗口
+        // Create new window
         let settingsView = SettingsView(settingsManager: settingsManager)
         let hostingView = NSHostingView(rootView: settingsView)
 
@@ -41,21 +41,21 @@ final class SettingsWindowController: NSObject {
         )
 
         window.center()
-        window.title = "Aura 设置"
+        window.title = "Aura Settings"
         window.contentView = hostingView
         window.isReleasedWhenClosed = false
         window.makeKeyAndOrderFront(nil)
 
-        // 设置窗口委托以处理关闭事件
+        // Set delegate to handle close
         window.delegate = self
 
         self.window = window
 
-        // 激活应用
+        // Activate app
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    /// 关闭设置窗口
+    /// Close settings window
     func close() {
         window?.close()
     }
@@ -65,7 +65,7 @@ final class SettingsWindowController: NSObject {
 
 extension SettingsWindowController: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
-        // 窗口关闭时不释放,保持引用
-        print("⚙️ 设置窗口已关闭")
+        // Keep reference
+        print("⚙️ Settings window closed")
     }
 }
