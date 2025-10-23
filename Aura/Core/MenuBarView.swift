@@ -24,11 +24,13 @@ struct MenuBarView: View {
             }
             .keyboardShortcut(",")
 
+            #if DEBUG
             Divider()
 
             Button("Debug: Flash Highlight Once") {
                 appState.debugFlashHighlightOnce()
             }
+            #endif
 
             Divider()
 
