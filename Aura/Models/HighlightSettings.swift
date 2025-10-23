@@ -61,11 +61,31 @@ struct HighlightSettings: Codable, Equatable {
             }
         }
 
+        /// 英文显示名（不影响存储的 rawValue）
+        var displayName: String {
+            switch self {
+            case .rainbow: return "Rainbow"
+            case .blue: return "Blue"
+            case .green: return "Green"
+            case .red: return "Red"
+            case .purple: return "Purple"
+            }
+        }
+
         /// 渐变颜色数组
         var colors: [Color] {
             switch self {
             case .rainbow:
-                return [.red, .orange, .yellow, .green, .blue, .purple, .red]
+                // 去除深红/深紫/黑，使用更明亮的暖冷渐变
+                return [
+                    .orange,
+                    .yellow,
+                    Color(red: 0.3, green: 0.9, blue: 0.5), // bright green
+                    .cyan,
+                    Color(red: 0.2, green: 0.6, blue: 1.0), // sky blue
+                    .teal,
+                    .orange
+                ]
 
             case .blue:
                 return [
@@ -84,19 +104,19 @@ struct HighlightSettings: Codable, Equatable {
                 ]
 
             case .red:
+                // 更浅的珊瑚红系，避免深红
                 return [
-                    Color(red: 1.0, green: 0.2, blue: 0.2),
-                    Color(red: 1.0, green: 0.4, blue: 0.3),
-                    Color(red: 1.0, green: 0.5, blue: 0.4),
-                    Color(red: 1.0, green: 0.2, blue: 0.2)
+                    Color(red: 1.0, green: 0.55, blue: 0.5),
+                    Color(red: 1.0, green: 0.65, blue: 0.55),
+                    Color(red: 1.0, green: 0.55, blue: 0.5)
                 ]
 
             case .purple:
+                // 偏浅的紫罗兰系，避免深紫
                 return [
-                    Color(red: 0.6, green: 0.2, blue: 0.8),
-                    Color(red: 0.7, green: 0.3, blue: 0.9),
-                    Color(red: 0.8, green: 0.4, blue: 1.0),
-                    Color(red: 0.6, green: 0.2, blue: 0.8)
+                    Color(red: 0.78, green: 0.52, blue: 1.0),
+                    Color(red: 0.72, green: 0.58, blue: 1.0),
+                    Color(red: 0.78, green: 0.52, blue: 1.0)
                 ]
             }
         }

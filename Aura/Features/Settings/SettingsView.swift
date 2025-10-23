@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// 设置窗口视图
-/// 提供用户自定义高亮效果的界面
+/// Settings window
+/// User-configurable highlight options
 struct SettingsView: View {
     @ObservedObject var settingsManager: SettingsManager
     @Environment(\.dismiss) private var dismiss
@@ -44,13 +44,13 @@ struct SettingsView: View {
 
     private var headerView: some View {
         HStack {
-            Text("设置")
+            Text("Settings")
                 .font(.title2)
                 .fontWeight(.semibold)
 
             Spacer()
 
-            Button("重置默认") {
+            Button("Reset to Default") {
                 settingsManager.resetToDefault()
             }
             .buttonStyle(.plain)
@@ -63,12 +63,16 @@ struct SettingsView: View {
 
     private var borderThicknessSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("边框厚度", systemImage: "ruler")
+            Label("Border Thickness", systemImage: "ruler")
                 .font(.headline)
 
-            Picker("边框厚度", selection: $settingsManager.settings.borderThickness) {
+            Picker("Border Thickness", selection: $settingsManager.settings.borderThickness) {
                 ForEach(HighlightSettings.BorderThickness.allCases) { thickness in
-                    Text(thickness.rawValue)
+                    // Show English label; keep rawValue for persistence
+                    Text(
+                        thickness == .small ? "Small" :
+                        thickness == .medium ? "Medium" : "Large"
+                    )
                         .tag(thickness)
                 }
             }
@@ -81,7 +85,7 @@ struct SettingsView: View {
 
     private var colorThemeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("颜色主题", systemImage: "paintpalette")
+            Label("Color Theme", systemImage: "paintpalette")
                 .font(.headline)
 
             LazyVGrid(columns: [
@@ -105,7 +109,7 @@ struct SettingsView: View {
 
     private var previewSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("预览", systemImage: "eye")
+            Label("Preview", systemImage: "eye")
                 .font(.headline)
 
             ZStack {
@@ -113,13 +117,13 @@ struct SettingsView: View {
                     .fill(Color(nsColor: .windowBackgroundColor))
                     .frame(height: 200)
 
-                Circle()
+                // Demo as a rounded rectangle box
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .strokeBorder(
-                        AngularGradient(
+                        LinearGradient(
                             gradient: Gradient(colors: settingsManager.settings.colorTheme.colors),
-                            center: .center,
-                            startAngle: .degrees(0),
-                            endAngle: .degrees(360)
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         ),
                         lineWidth: settingsManager.settings.borderThickness.lineWidth
                     )
@@ -141,7 +145,7 @@ struct SettingsView: View {
         HStack {
             Spacer()
 
-            Button("关闭") {
+            Button("Close") {
                 dismiss()
             }
             .keyboardShortcut(.defaultAction)
@@ -152,7 +156,7 @@ struct SettingsView: View {
 
 // MARK: - Theme Card
 
-/// 主题卡片组件
+/// Theme card component
 private struct ThemeCard: View {
     let theme: HighlightSettings.ColorTheme
     let isSelected: Bool
@@ -161,14 +165,13 @@ private struct ThemeCard: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                // 颜色预览圆环
-                Circle()
+                // Color preview as rounded rectangle box
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .strokeBorder(
-                        AngularGradient(
+                        LinearGradient(
                             gradient: Gradient(colors: theme.colors),
-                            center: .center,
-                            startAngle: .degrees(0),
-                            endAngle: .degrees(360)
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         ),
                         lineWidth: 4
                     )
@@ -179,7 +182,7 @@ private struct ThemeCard: View {
                     Text(theme.icon)
                         .font(.title3)
 
-                    Text(theme.rawValue)
+                    Text(theme.displayName)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

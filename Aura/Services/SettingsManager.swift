@@ -1,12 +1,12 @@
 import Foundation
 import Combine
 
-/// 设置管理器
-/// 负责设置的持久化和状态管理
+/// Settings manager
+/// Persists and manages user settings
 final class SettingsManager: ObservableObject {
     // MARK: - Published Properties
 
-    /// 当前设置
+    /// Current settings
     @Published var settings: HighlightSettings {
         didSet {
             saveSettings()
@@ -15,16 +15,16 @@ final class SettingsManager: ObservableObject {
 
     // MARK: - Private Properties
 
-    /// UserDefaults 键
+    /// UserDefaults key
     private let settingsKey = "com.aura.highlightSettings"
 
-    /// UserDefaults 实例
+    /// UserDefaults instance
     private let userDefaults: UserDefaults
 
     // MARK: - Initialization
 
-    /// 初始化设置管理器
-    /// - Parameter userDefaults: UserDefaults 实例 (用于测试注入)
+    /// Initialize settings manager
+    /// - Parameter userDefaults: injected for tests
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         self.settings = Self.loadSettings(from: userDefaults) ?? .default
@@ -32,42 +32,42 @@ final class SettingsManager: ObservableObject {
 
     // MARK: - Public Methods
 
-    /// 重置为默认设置
+    /// Reset to default settings
     func resetToDefault() {
         settings = .default
-        print("✨ 设置已重置为默认值")
+        print("✨ Settings reset to default")
     }
 
     // MARK: - Private Methods
 
-    /// 保存设置
+    /// Save settings
     private func saveSettings() {
         do {
             let encoder = JSONEncoder()
             let data = try encoder.encode(settings)
             userDefaults.set(data, forKey: settingsKey)
-            print("💾 设置已保存")
+            print("💾 Settings saved")
         } catch {
-            print("❌ 保存设置失败: \(error.localizedDescription)")
+            print("❌ Failed to save settings: \(error.localizedDescription)")
         }
     }
 
-    /// 加载设置
-    /// - Parameter userDefaults: UserDefaults 实例
-    /// - Returns: 加载的设置,如果失败返回 nil
+    /// Load settings from UserDefaults
+    /// - Parameter userDefaults: storage
+    /// - Returns: decoded settings if any
     private static func loadSettings(from userDefaults: UserDefaults) -> HighlightSettings? {
         guard let data = userDefaults.data(forKey: "com.aura.highlightSettings") else {
-            print("📋 未找到保存的设置,使用默认设置")
+            print("📋 No saved settings found; using defaults")
             return nil
         }
 
         do {
             let decoder = JSONDecoder()
             let settings = try decoder.decode(HighlightSettings.self, from: data)
-            print("✅ 设置加载成功")
+            print("✅ Settings loaded")
             return settings
         } catch {
-            print("❌ 加载设置失败: \(error.localizedDescription)")
+            print("❌ Failed to load settings: \(error.localizedDescription)")
             return nil
         }
     }
