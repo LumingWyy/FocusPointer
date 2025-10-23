@@ -42,11 +42,12 @@ final class HighlightManagerTests: XCTestCase {
 
         // Act & Assert
         manager.toggle() // enable
-        XCTAssertEqual(mock.startCount, 1)
+        XCTAssertEqual(mock.startCount, 1, "Should start monitoring when enabled")
         XCTAssertTrue(manager.isEnabled)
 
         manager.toggle() // disable
-        XCTAssertEqual(mock.stopCount, 1)
+        // Note: 监听器保持常驻以避免重复权限请求,仅隐藏高亮
+        XCTAssertEqual(mock.stopCount, 0, "Monitor should remain active to avoid permission re-prompts")
         XCTAssertFalse(manager.isEnabled)
     }
 
