@@ -56,7 +56,7 @@ Aura is a lightweight mouse click highlighter designed specifically for macOS. D
 
 ### Method: Download DMG (Recommended)
 
-1. Go to [Releases page](https://github.com/YOUR_USERNAME/FocusPointer/releases)
+1. Go to [Releases page](https://github.com/LumingWyy/FocusPointer/releases)
 2. Download the latest `Aura-x.x.x.dmg`
 3. Open the DMG file
 4. Drag **Aura** to **Applications** folder
