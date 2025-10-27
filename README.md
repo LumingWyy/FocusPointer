@@ -295,28 +295,12 @@ Aura 是一款专为 macOS 设计的轻量级鼠标点击高亮工具。在屏�
 
 ## 💾 安装
 
-### 方法一: 下载 DMG (推荐)
+### 方法: 下载 DMG (推荐)
 
-1. 前往 [Releases 页面](https://github.com/YOUR_USERNAME/FocusPointer/releases)
+1. 前往 [Releases 页面](https://github.com/LumingWyy/FocusPointer/releases)
 2. 下载最新版本的 `Aura-x.x.x.dmg`
 3. 打开 DMG 文件
 4. 将 **Aura** 拖动到 **应用程序** 文件夹
-
-### 方法二: 使用 Homebrew
-
-```bash
-brew install --cask aura
-```
-
-### 首次运行
-
-1. 在 **应用程序** 中找到并打开 **Aura**
-2. 如果看到"无法打开"提示:
-   - 进入 **系统设置 > 隐私与安全性**
-   - 点击"仍要打开"
-3. 授予 **辅助功能** 权限:
-   - **系统设置 > 隐私与安全性 > 辅助功能**
-   - 勾选 **Aura**
 
 ---
 
