@@ -54,28 +54,12 @@ Aura is a lightweight mouse click highlighter designed specifically for macOS. D
 
 ## 💾 Installation
 
-### Method 1: Download DMG (Recommended)
+### Method: Download DMG (Recommended)
 
 1. Go to [Releases page](https://github.com/YOUR_USERNAME/FocusPointer/releases)
 2. Download the latest `Aura-x.x.x.dmg`
 3. Open the DMG file
 4. Drag **Aura** to **Applications** folder
-
-### Method 2: Using Homebrew
-
-```bash
-brew install --cask aura
-```
-
-### First Run
-
-1. Find and open **Aura** in **Applications**
-2. If you see "cannot be opened" prompt:
-   - Go to **System Settings > Privacy & Security**
-   - Click "Open Anyway"
-3. Grant **Accessibility** permission:
-   - **System Settings > Privacy & Security > Accessibility**
-   - Check **Aura**
 
 ---
 
