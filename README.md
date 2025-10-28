@@ -1,11 +1,10 @@
-# Aura - macOS Mouse Click Highlighter / macOS 鼠标点击高亮工具
+# Aura - macOS Mouse Click Highlighter
 
 <div align="center">
 
 ![Aura Logo](docs/images/logo.png)
 
 **Elegant visual feedback for mouse clicks - Make your presentations crystal clear**
-**优雅的鼠标点击视觉反馈工具 - 让你的演示更清晰**
 
 [![Build Status](https://github.com/YOUR_USERNAME/FocusPointer/workflows/Build%20and%20Test/badge.svg)](https://github.com/YOUR_USERNAME/FocusPointer/actions)
 [![Release](https://img.shields.io/github/v/release/YOUR_USERNAME/FocusPointer)](https://github.com/YOUR_USERNAME/FocusPointer/releases)
